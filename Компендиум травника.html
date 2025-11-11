@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Компендиум Травника</title>
+    <!-- Подключаем Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключаем шрифт Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Применяем шрифт Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Стили для кастомного скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* bg-gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* bg-gray-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* bg-gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-full overflow-y-auto">
+
+    <div class="container max-w-7xl mx-auto p-4 md:p-8">
+        <h1 class="text-4xl font-bold text-center text-green-400 mb-8">Компендиум Травника</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- ЛЕВАЯ КОЛОНКА: Настройки и Действия -->
+            <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-8 lg:self-start">
+                
+                <!-- Блок Настроек Поиска -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-4 border-b border-gray-700 pb-2">Настройки Поиска</h2>
+                    
+                    <!-- Фильтр Местности -->
+                    <div>
+                        <label for="location-filter" class="block text-sm font-medium text-gray-300 mb-2">Текущая Местность:</label>
+                        <select id="location-filter" class="block w-full bg-gray-700 border-gray-600 rounded-md p-2 text-white focus:ring-green-500 focus:border-green-500">
+                            <option value="forest">Лес</option>
+                            <option value="steppe">Степь</option>
+                            <option value="mountains">Горы</option>
+                            <option value="swamp">Болото</option>
+                            <option value="river">Река</option>
+                        </select>
+                    </div>
+
+                    <!-- Переключатель Ночь/День -->
+                    <div class="mt-4">
+                        <label for="night-toggle" class="flex items-center cursor-pointer">
+                            <div class="relative">
+                                <input type="checkbox" id="night-toggle" class="sr-only">
+                                <!-- 'bar' - фон меняется скриптом -->
+                                <div class="block w-14 h-8 rounded-full transition-colors duration-300"></div>
+                                <!-- 'dot' - точка меняется скриптом -->
+                                <div class="dot absolute left-1 top-1 w-6 h-6 rounded-full transition-all duration-300"></div>
+                            </div>
+                            <div class="ml-3 text-gray-300 font-medium" id="time-label">День</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Блок Сбора Растений -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-4">Поиск и Сбор</h2>
+                    
+                    <!-- Кнопка Поиска -->
+                    <button id="search-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg transition duration-200 shadow-md">
+                        Бросить d20 для **поиска**
+                    </button>
+                    <div class="text-center mt-4">
+                        <p class="text-lg">Результат Поиска d20: <span id="search-d20-result" class="font-bold text-2xl text-yellow-300">-</span></p>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-gray-200 mt-6 mb-2">Результаты Поиска:</h3>
+                    <div id="search-results-display" class="min-h-[100px] bg-gray-700 p-4 rounded-lg border border-gray-600 text-gray-300 overflow-y-auto max-h-[200px]">
+                        <p class="italic text-gray-400">Нажмите кнопку, чтобы найти растения...</p>
+                    </div>
+
+                    <!-- Разделитель -->
+                    <hr class="border-gray-600 my-6">
+
+                    <!-- Кнопка Сбора -->
+                    <button id="gather-btn" class="w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-lg text-lg transition duration-200 shadow-md cursor-not-allowed opacity-50">
+                        Бросить d20 для **сбора**
+                    </button>
+                    <div class="text-center mt-4">
+                        <p class="text-lg">Результат Сбора d20: <span id="gather-d20-result" class="font-bold text-2xl text-yellow-300">-</span></p>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-200 mt-6 mb-2">Собранная Добыча:</h3>
+                    <div id="loot-display" class="min-h-[100px] bg-gray-700 p-4 rounded-lg border border-gray-600 text-gray-300 overflow-y-auto max-h-[200px]">
+                        <p class="italic text-gray-400">Ожидание сбора...</p>
+                    </div>
+                </div>
+
+                <!-- Блок Броска Кубиков -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-indigo-400 mb-4">Броски Кубиков</h2>
+                    
+                    <!-- Поле для множителя -->
+                    <div class="mb-4">
+                        <label for="dice-multiplier" class="block text-sm font-medium text-gray-300 mb-2">Количество (Множитель):</label>
+                        <!-- Заменяем input на select -->
+                        <select id="dice-multiplier" class="block w-full bg-gray-700 border-gray-600 rounded-md p-2 text-white focus:ring-indigo-500 focus:border-indigo-500">
+                            <!-- Опции от 1 до 30 будут добавлены скриптом -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <button data-die="4" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d4</button>
+                        <button data-die="6" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d6</button>
+                        <button data-die="8" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d8</button>
+                        <button data-die="10" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d10</button>
+                        <button data-die="12" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d12</button>
+                        <button data-die="20" class="dice-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow">d20</button>
+                    </div>
+                    <p class="text-center text-lg mt-4">Результат: <span id="dice-result" class="font-bold text-2xl text-yellow-300">-</span></p>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ КОЛОНКА: Компендиум -->
+            <div class="lg:col-span-2">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-green-400 mb-4">Компендиум</h2>
+                    
+                    <!-- Фильтр Категорий -->
+                    <div>
+                        <label for="category-filter" class="block text-sm font-medium text-gray-300 mb-2">Фильтр по Категории:</label>
+                        <select id="category-filter" class="block w-full md:w-1/2 bg-gray-700 border-gray-600 rounded-md p-2 text-white focus:ring-green-500 focus:border-green-500">
+                            <option value="all">Все Категории</option>
+                            <option value="herb">Травы</option>
+                            <option value="flower">Цветы</option>
+                            <option value="fungus">Грибы</option>
+                            <option value="berry">Ягоды</option>
+                            <option value="root">Корни</option>
+                        </select>
+                    </div>
+
+                    <!-- Контейнер для списка растений -->
+                    <div id="plant-list-container" class="mt-6 space-y-6">
+                        <!-- Сюда будет рендериться список растений -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- БАЗА ДАННЫХ РАСТЕНИЙ ---
+        // Rarity: 'common', 'uncommon', 'rare', 'very_rare'
+        // Time: 'day', 'night', 'any'
+        // Locations: 'forest', 'steppe', 'mountains', 'swamp', 'river'
+        const plantDatabase = [
+            // --- Лес (Forest) ---
+            { id: 1, name: "Обыкновенный Подорожник", category: "herb", locations: ["forest", "steppe"], time: "day", rarity: "common", description: "Помогает при мелких ранах и укусах." },
+            { id: 2, name: "Лунная Лилия", category: "flower", locations: ["forest", "river"], time: "night", rarity: "uncommon", description: "Светится слабым серебристым светом. Используется в зельях сна." },
+            { id: 3, name: "Мухомор", category: "fungus", locations: ["forest"], time: "any", rarity: "common", description: "Ядовит в сыром виде, но основа для многих мазей." },
+            { id: 4, name: "Волчья Ягода", category: "berry", locations: ["forest"], time: "day", rarity: "uncommon", description: "Сильный яд. Используется в малых дозах." },
+            { id: 5, name: "Корень Жизни", category: "root", locations: ["forest"], time: "any", rarity: "rare", description: "Говорят, его отвар может исцелить тяжелые недуги." },
+            { id: 6, name: "Звездный Мох", category: "fungus", locations: ["forest", "swamp"], time: "night", rarity: "very_rare", description: "Мерцает, как ночное небо. Ключ к зельям невидимости." },
+
+            // --- Степь (Steppe) ---
+            { id: 7, name: "Степная Полынь", category: "herb", locations: ["steppe"], time: "day", rarity: "common", description: "Горькая трава, отгоняющая насекомых и злых духов." },
+            { id: 8, name: "Ковыль-Шелк", category: "herb", locations: ["steppe"], time: "any", rarity: "uncommon", description: "Его волокна прочны, как сталь, при правильной обработке." },
+            { id: 9, name: "Солнечный Колючник", category: "flower", locations: ["steppe", "mountains"], time: "day", rarity: "common", description: "Ярко-желтый цветок, накапливающий солнечный свет." },
+            { id: 10, name: "Степная Гадючка", category: "root", locations: ["steppe"], time: "night", rarity: "rare", description: "Извивающийся корень, эффективный против ядов." },
+
+            // --- Горы (Mountains) ---
+            { id: 11, name: "Горный Вереск", category: "herb", locations: ["mountains"], time: "day", rarity: "common", description: "Чай из него придает бодрости и согревает." },
+            { id: 12, name: "Эдельвейс", category: "flower", locations: ["mountains"], time: "day", rarity: "uncommon", description: "Символ удачи и стойкости. Растет на голых скалах." },
+            { id: 13, name: "Каменная Роза", category: "flower", locations: ["mountains"], time: "any", rarity: "rare", description: "Лепестки тверды, как камень. Используется в защитных зельях." },
+            { id: 14, name: "Драконье Дыхание", category: "herb", locations: ["mountains"], time: "any", rarity: "very_rare", description: "Горячая на ощупь трава. Основа для огненных эликсиров." },
+
+            // --- Болото (Swamp) ---
+            { id: 15, name: "Болотный Мох", category: "herb", locations: ["swamp"], time: "any", rarity: "common", description: "Отличный перевязочный и фильтрующий материал." },
+            { id: 16, name: "Топная Ряска", category: "herb", locations: ["swamp", "river"], time: "day", rarity: "common", description: "Скользкая, но питательная." },
+            { id: 17, name: "Гнилец", category: "fungus", locations: ["swamp"], time: "night", rarity: "uncommon", description: "Светится тусклым зеленым светом. Используется в ядах и проклятиях." },
+            { id: 18, name: "Жабий Корень", category: "root", locations: ["swamp"], time: "any", rarity: "rare", description: "Усиливает магические свойства других ингредиентов." },
+
+            // --- Река (River) ---
+            { id: 19, name: "Речная Мята", category: "herb", locations: ["river"], time: "day", rarity: "common", description: "Освежает дыхание и проясняет ум." },
+            { id: 20, name: "Кувшинка", category: "flower", locations: ["river"], time: "day", rarity: "common", description: "Успокаивающее средство." },
+            { id: 21, name: "Жемчужная Водоросль", category: "herb", locations: ["river"], time: "night", rarity: "uncommon", description: "Маленькие пузырьки на ней светятся, как жемчуг." },
+            { id: 22, name: "Глубинный Корень", category: "root", locations: ["river", "swamp"], time: "any", rarity: "rare", description: "Тянется глубоко в ил. Позволяет дышать под водой." }
+        ];
+
+        // --- Глобальные Элементы DOM ---
+        let locationFilter, nightToggle, timeLabel, categoryFilter;
+        let searchBtn, searchD20ResultEl, searchResultsDisplayEl;
+        let gatherBtn, gatherD20ResultEl, lootDisplayEl;
+        let diceResultEl, diceMultiplierEl; // Добавляем diceMultiplierEl
+        let plantListContainerEl;
+
+        // --- Глобальное Состояние ---
+        let potentialLoot = [];
+
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация элементов
+            locationFilter = document.getElementById('location-filter');
+            nightToggle = document.getElementById('night-toggle');
+            timeLabel = document.getElementById('time-label');
+            categoryFilter = document.getElementById('category-filter');
+            
+            // Элементы Поиска
+            searchBtn = document.getElementById('search-btn');
+            searchD20ResultEl = document.getElementById('search-d20-result');
+            searchResultsDisplayEl = document.getElementById('search-results-display');
+            
+            // Элементы Сбора
+            gatherBtn = document.getElementById('gather-btn');
+            gatherD20ResultEl = document.getElementById('gather-d20-result');
+            lootDisplayEl = document.getElementById('loot-display');
+            
+            // Другие элементы
+            diceResultEl = document.getElementById('dice-result');
+            diceMultiplierEl = document.getElementById('dice-multiplier'); // Находим новый select
+            plantListContainerEl = document.getElementById('plant-list-container');
+            
+            // --- ЗАПОЛНЕНИЕ ВЫПАДАЮЩЕГО СПИСКА МНОЖИТЕЛЯ ---
+            // Динамически создаем опции от 1 до 30
+            for (let i = 1; i <= 30; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                diceMultiplierEl.appendChild(option);
+            }
+
+            // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
+
+            // Переключатель Ночь/День
+            nightToggle.addEventListener('change', () => {
+                const isNight = nightToggle.checked;
+                const dot = nightToggle.nextElementSibling.nextElementSibling;
+                const bar = dot.previousElementSibling;
+
+                // Удаляем старые классы
+                bar.classList.remove('bg-gray-600', 'bg-yellow-400', 'bg-indigo-800');
+                dot.classList.remove('bg-white', 'bg-yellow-100', 'bg-blue-200');
+
+                if (isNight) {
+                    // Ночь (луна)
+                    timeLabel.textContent = 'Ночь';
+                    dot.style.transform = 'translateX(1.5rem)';
+                    bar.classList.add('bg-indigo-800');
+                    dot.classList.add('bg-blue-200');
+                } else {
+                    // День (солнце)
+                    timeLabel.textContent = 'День';
+                    dot.style.transform = 'translateX(0)';
+                    bar.classList.add('bg-yellow-400');
+                    dot.classList.add('bg-yellow-100');
+                }
+                renderPlantList(); // Обновляем компандиум
+            });
+
+            // Фильтры Компендиума
+            locationFilter.addEventListener('change', renderPlantList);
+            categoryFilter.addEventListener('change', renderPlantList);
+
+            // Кнопка Поиска (бывший Сбор)
+            searchBtn.addEventListener('click', handleSearchRoll);
+
+            // Кнопка Сбора (новая)
+            gatherBtn.addEventListener('click', handleGatherRoll);
+
+            // Кнопки Обычных Кубиков
+            document.querySelectorAll('.dice-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const sides = parseInt(button.dataset.die, 10);
+                    const multiplier = parseInt(diceMultiplierEl.value, 10) || 1; // Получаем множитель
+                    
+                    let totalSum = 0;
+                    for (let i = 0; i < multiplier; i++) {
+                        totalSum += rollDice(sides); // Суммируем броски
+                    }
+                    
+                    diceResultEl.textContent = totalSum; // Показываем сумму
+                });
+            });
+
+            // --- НОВЫЙ ОБРАБОТЧИК ДЛЯ КАРТОЧЕК-АККОРДЕОНОВ ---
+            // Используем делегирование событий, чтобы слушать клики на контейнере
+            plantListContainerEl.addEventListener('click', (e) => {
+                // Находим кнопку, по которой кликнули (или ее родителя)
+                const toggleButton = e.target.closest('.plant-toggle-btn');
+                if (!toggleButton) return; // Клик был не по кнопке
+
+                // Находим следующий элемент (это наш блок с деталями)
+                const details = toggleButton.nextElementSibling;
+                
+                // Переключаем класс 'hidden'
+                if (details) {
+                    details.classList.toggle('hidden');
+                }
+            });
+
+            // Первоначальная отрисовка Компендиума
+            renderPlantList();
+            
+            // Инициализация стиля переключателя
+            nightToggle.dispatchEvent(new Event('change'));
+            // Инициализация кнопки сбора
+            gatherBtn.disabled = true;
+        });
+
+        // --- ОСНОВНЫЕ ФУНКЦИИ ---
+
+        /**
+         * Бросает кубик с заданным количеством граней.
+         * @param {number} sides - Количество граней (4, 6, 8, 10, 12, 20)
+         * @returns {number} - Результат броска (1-sides)
+         */
+        function rollDice(sides) {
+            return Math.floor(Math.random() * sides) + 1;
+        }
+
+        /**
+         * Возвращает CSS-класс для редкости растения.
+         * @param {string} rarity - "common", "uncommon", "rare", "very_rare"
+         * @returns {string} - Tailwind классы
+         */
+        function getRarityClass(rarity) {
+            switch (rarity) {
+                case 'common': return 'bg-gray-500 text-gray-100';
+                case 'uncommon': return 'bg-blue-600 text-white';
+                case 'rare': return 'bg-purple-600 text-white';
+                case 'very_rare': return 'bg-yellow-500 text-gray-900 font-bold';
+                default: return 'bg-gray-400 text-gray-900';
+            }
+        }
+
+        /**
+         * НОВАЯ ФУНКЦИЯ: Возвращает SVG-иконку для категории.
+         * @param {string} category - "herb", "flower", "fungus", "berry", "root"
+         * @returns {string} - HTML-строка с SVG
+         */
+        function getCategoryIcon(category) {
+            // Иконки взяты из Heroicons (https://heroicons.com/)
+            const icons = {
+                'herb': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0-1.319.769-2.511 1.91-3.049a4.5 4.5 0 0 1 6.364 0c1.14.538 1.91 1.73 1.91 3.05v.417a2.25 2.25 0 0 1-2.25 2.25h-5.5a2.25 2.25 0 0 1-2.25-2.25v-.417Z" />
+                    </svg>`,
+                'flower': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Z" />
+                    </svg>`,
+                'fungus': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.375 10.375V11.25c0 1.5-1.5 2.625-3.375 2.625h-1.5c-1.875 0-3.375 1.125-3.375 2.625V17.25c0 1.104-.896 2.025-2.025 2.025h-1.5c-1.104 0-2.025-.921-2.025-2.025v-.75c0-1.5-1.5-2.625-3.375-2.625H4.125C2.25 13.875.75 12.75.75 11.25V10.375c0-1.104.921-2.025 2.025-2.025h1.5c1.104 0 2.025.921 2.025 2.025v.75c0 1.5 1.5 2.625 3.375 2.625h1.5c1.875 0 3.375-1.125 3.375-2.625v-.75c0-1.104.921-2.025 2.025-2.025h1.5c1.104 0 2.025.921 2.025 2.025Z" />
+                    </svg>`,
+                'berry': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.092 1.21-.138 2.43-.138 3.662a4.006 4.006 0 0 0 4.006 4.006h7.032a4.006 4.006 0 0 0 4.006-4.006Zm-7.032 0a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v.001M12 19.5v.001M16.5 10.5v.001M7.5 10.5v.001" />
+                    </svg>`,
+                'root': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a11.105 11.105 0 0 1-3.182.004l-.143-.048a2.25 2.25 0 0 1-1.161-.886l-.51-.766c-.319-.48-.226-1.121.216-1.49l1.068-.89a1.125 1.125 0 0 0 .405-.864v-.568a1.125 1.125 0 0 1 2.25 0ZM19.5 12.75l-2.66.99c-.42.157-.74.47-.958.855l-.417.75a.375.375 0 0 1-.68 0l-.417-.75c-.218-.385-.537-.698-.958-.855l-2.66-.99a1.125 1.125 0 0 0-1.173.49l-.499.866a.375.375 0 0 1-.645 0l-.499-.866a1.125 1.125 0 0 0-1.173-.49L4.5 12.75M3 15.75l2.25.844c.427.16.8.384 1.116.67l.69.574a.375.375 0 0 0 .56 0l.69-.574c.317-.286.69-.51 1.116-.67L12 15.75l2.25.844c.427.16.8.384 1.116.67l.69.574a.375.375 0 0 0 .56 0l.69-.574c.317-.286.69-.51 1.116-.67L21 15.75M12 21.75l.394-.132a.375.375 0 0 0 0-.724L12 20.75l-.394.132a.375.375 0 0 0 0 .724L12 21.75Z" />
+                    </svg>`,
+                default: ''
+            };
+            return icons[category] || '';
+        }
+
+        /**
+         * Отрисовывает полный список растений в Компендиуме.
+         */
+        function renderPlantList() {
+            if (!plantListContainerEl) return; // Защита от раннего вызова
+
+            // Получаем текущие значения фильтров
+            const currentLocation = locationFilter.value;
+            const isNight = nightToggle.checked;
+            const currentTime = isNight ? 'night' : 'day';
+            const currentCategory = categoryFilter.value;
+
+            // Фильтруем базу данных
+            const filteredPlants = plantDatabase.filter(plant => {
+                const locationMatch = plant.locations.includes(currentLocation);
+                const timeMatch = (plant.time === currentTime || plant.time === 'any');
+                const categoryMatch = (currentCategory === 'all' || plant.category === currentCategory);
+                return locationMatch && timeMatch && categoryMatch;
+            });
+
+            // Очищаем контейнер
+            plantListContainerEl.innerHTML = '';
+
+            if (filteredPlants.length === 0) {
+                plantListContainerEl.innerHTML = '<p class="text-gray-400 italic">По вашим фильтрам ничего не найдено.</p>';
+                return;
+            }
+
+            // Группируем по категориям
+            const categories = {};
+            filteredPlants.forEach(plant => {
+                if (!categories[plant.category]) {
+                    categories[plant.category] = [];
+                }
+                categories[plant.category].push(plant);
+            });
+            
+            // Рендерим группы
+            const categoryNames = {
+                'herb': 'Травы', 'flower': 'Цветы', 'fungus': 'Грибы', 'berry': 'Ягоды', 'root': 'Корни'
+            };
+
+            // Сортируем категории
+            const sortedCategories = Object.keys(categories).sort((a, b) => 
+                categoryNames[a].localeCompare(categoryNames[b])
+            );
+
+            for (const categoryKey of sortedCategories) {
+                const categoryName = categoryNames[categoryKey] || categoryKey;
+                const plantsInCategory = categories[categoryKey];
+
+                let categoryHtml = `
+                    <div>
+                        <h3 class="text-2xl font-semibold text-green-300 mt-6 border-b border-gray-700 pb-2 mb-4">
+                            ${categoryName}
+                        </h3>
+                        <div class="space-y-3">
+                `;
+
+                // Сортируем растения в категории по имени
+                plantsInCategory.sort((a, b) => a.name.localeCompare(b.name));
+
+                plantsInCategory.forEach(plant => {
+                    // --- НОВАЯ СТРУКТУРА КАРТОЧКИ-АККОРДЕОНА ---
+                    categoryHtml += `
+                        <div class="bg-gray-700 rounded-lg shadow-md overflow-hidden">
+                            <!-- 1. Кликабельный Заголовок Карточки -->
+                            <button class="plant-toggle-btn w-full flex items-center justify-between p-4 text-left hover:bg-gray-600 focus:outline-none focus:bg-gray-600 transition duration-150">
+                                <div class="flex items-center">
+                                    <!-- Иконка категории -->
+                                    <span class="mr-3 text-green-400 flex-shrink-0">
+                                        ${getCategoryIcon(plant.category)}
+                                    </span>
+                                    <!-- Название -->
+                                    <h4 class="text-lg font-bold text-white">${plant.name}</h4>
+                                </div>
+                                <!-- Редкость -->
+                                <span class="text-xs font-medium px-3 py-1 rounded-full ${getRarityClass(plant.rarity)} flex-shrink-0 ml-4">
+                                    ${plant.rarity}
+                                </span>
+                            </button>
+                            
+                            <!-- 2. Скрытый Блок с Деталями -->
+                            <div class="plant-details p-4 bg-gray-800 border-t border-gray-600 hidden">
+                                <p class="text-sm text-gray-300 mb-3">${plant.description}</p>
+                                <!-- Дополнительная информация (Теги) -->
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-xs font-medium px-2 py-1 rounded-md bg-gray-600 text-gray-200">
+                                        Время: ${plant.time === 'any' ? 'Любое' : (plant.time === 'day' ? 'День' : 'Ночь')}
+                                    </span>
+                                    <span class="text-xs font-medium px-2 py-1 rounded-md bg-gray-600 text-gray-200">
+                                        Места: ${plant.locations.map(loc => 
+                                            // Простое преобразование ключа в читаемое название
+                                            document.querySelector(`#location-filter option[value='${loc}']`).textContent
+                                        ).join(', ')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    // --- КОНЕЦ НОВОЙ СТРУКТКТУРЫ ---
+                });
+
+                categoryHtml += '</div></div>';
+                plantListContainerEl.innerHTML += categoryHtml;
+            }
+        }
+
+        /**
+         * Обрабатывает бросок d20 для ПОИСКА растений.
+         */
+        function handleSearchRoll() {
+            const roll = rollDice(20);
+            searchD20ResultEl.textContent = roll;
+
+            // Очищаем предыдущие результаты сбора
+            gatherD20ResultEl.textContent = '-';
+            lootDisplayEl.innerHTML = '<p class="italic text-gray-400">Ожидание сбора...</p>';
+
+            const currentLocation = locationFilter.value;
+            const isNight = nightToggle.checked;
+            const currentTime = isNight ? 'night' : 'day';
+
+            // 1. Получаем ВСЕ доступные растения по фильтрам
+            const availablePlants = plantDatabase.filter(plant => 
+                plant.locations.includes(currentLocation) &&
+                (plant.time === currentTime || plant.time === 'any')
+            );
+
+            // 2. Разделяем их по редкости
+            const lootPool = {
+                common: availablePlants.filter(p => p.rarity === 'common'),
+                uncommon: availablePlants.filter(p => p.rarity === 'uncommon'),
+                rare: availablePlants.filter(p => p.rarity === 'rare'),
+                very_rare: availablePlants.filter(p => p.rarity === 'very_rare')
+            };
+
+            // 3. Определяем добычу по результату броска
+            let foundLoot = [];
+            
+            if (roll <= 5) {
+                // Провал
+                foundLoot.push({ name: "Ничего", description: "Вы ничего не нашли, кроме грязи." });
+            } else if (roll <= 10) {
+                // 1 Обычное
+                foundLoot.push(getRandomPlant(lootPool.common, "Обычное растение не найдено"));
+            } else if (roll <= 14) {
+                // 2 Обычных
+                foundLoot.push(getRandomPlant(lootPool.common, "Обычное растение не найдено"));
+                foundLoot.push(getRandomPlant(lootPool.common, "Второе обычное не найдено"));
+            } else if (roll <= 17) {
+                // 1 Обычное, 1 Необычное
+                foundLoot.push(getRandomPlant(lootPool.common, "Обычное растение не найдено"));
+                foundLoot.push(getRandomPlant(lootPool.uncommon, "Необычное растение не найдено"));
+            } else if (roll <= 19) {
+                // 1 Необычное, 1 Редкое
+                foundLoot.push(getRandomPlant(lootPool.uncommon, "Необычное растение не найдено"));
+                foundLoot.push(getRandomPlant(lootPool.rare, "Редкое растение не найдено"));
+            } else {
+                // 20! 1 Редкое, 1 Очень Редкое
+                foundLoot.push(getRandomPlant(lootPool.rare, "Редкое растение не найдено"));
+                foundLoot.push(getRandomPlant(lootPool.very_rare, "Очень редкое растение не найдено!"));
+            }
+
+            // 4. Сохраняем найденное в глобальное состояние
+            potentialLoot = foundLoot;
+
+            // 5. Отображаем РЕЗУЛЬТАТЫ ПОИСКА
+            renderSearchResults(foundLoot);
+
+            // 6. Активируем/Деактивируем кнопку сбора
+            const actualPlantsFound = potentialLoot.filter(p => p.rarity !== 'none' && p.name !== 'Ничего');
+            if (actualPlantsFound.length > 0) {
+                gatherBtn.disabled = false;
+                gatherBtn.classList.remove('bg-gray-500', 'cursor-not-allowed', 'opacity-50');
+                gatherBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            } else {
+                gatherBtn.disabled = true;
+                gatherBtn.classList.add('bg-gray-500', 'cursor-not-allowed', 'opacity-50');
+                gatherBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            }
+        }
+
+        /**
+         * Обрабатывает бросок d20 для СБОРА растений из найденных.
+         */
+        function handleGatherRoll() {
+            const gatherRoll = rollDice(20);
+            gatherD20ResultEl.textContent = gatherRoll;
+
+            const actualPlants = potentialLoot.filter(p => p.rarity !== 'none' && p.name !== 'Ничего');
+
+            if (actualPlants.length === 0) {
+                renderGatheredLoot([], gatherRoll); // Показать, что собирать было нечего
+                return;
+            }
+
+            let gatheredCount = 0;
+            
+            if (gatherRoll <= 5) {
+                // Провал
+                gatheredCount = 0;
+            } else if (gatherRoll <= 14) {
+                // Частичный успех
+                gatheredCount = 1;
+            } else if (gatherRoll <= 19) {
+                // Успех
+                gatheredCount = 2;
+            } else {
+                // Крит. успех!
+                gatheredCount = 99; // Собираем всё
+            }
+
+            // Берем N растений из найденных
+            const finalLoot = actualPlants.slice(0, gatheredCount);
+
+            // 4. Отображаем финальную добычу
+            renderGatheredLoot(finalLoot, gatherRoll);
+
+            // 5. Сбрасываем состояние
+            potentialLoot = [];
+            gatherBtn.disabled = true;
+            gatherBtn.classList.add('bg-gray-500', 'cursor-not-allowed', 'opacity-50');
+            gatherBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        }
+
+        /**
+         * Выбирает случайное растение из массива.
+         * @param {Array} plantArray - Массив растений.
+         * @param {string} fallbackName - Сообщение, если массив пуст.
+         * @returns {Object} - Объект растения или заглушка.
+         */
+        function getRandomPlant(plantArray, fallbackName = "Ничего") {
+            if (!plantArray || plantArray.length === 0) {
+                return { name: fallbackName, description: "В этой местности нет растений такой редкости.", rarity: "none" };
+            }
+            const index = Math.floor(Math.random() * plantArray.length);
+            return plantArray[index];
+        }
+
+        /**
+         * Отрисовывает найденную (потенциальную) добычу в списке ПОИСКА.
+         * @param {Array} lootArray - Массив найденных растений.
+         */
+        function renderSearchResults(lootArray) {
+            searchResultsDisplayEl.innerHTML = '';
+            if (lootArray.length === 0) {
+                searchResultsDisplayEl.innerHTML = '<p class="text-gray-400 italic">Произошла ошибка.</p>';
+                return;
+            }
+            
+            lootArray.forEach(plant => {
+                if (plant.name === "Ничего") {
+                    searchResultsDisplayEl.innerHTML = `<p class="italic text-gray-300">${plant.description}</p>`;
+                    return; // Если "Ничего", не показываем другие
+                }
+
+                if (plant.rarity === "none") {
+                     searchResultsDisplayEl.innerHTML += `
+                        <div class="bg-gray-600 p-3 rounded-md mb-2 shadow">
+                            <p class="font-medium text-gray-400">${plant.name}</p>
+                            <p class="text-sm text-gray-400 italic">${plant.description}</p>
+                        </div>
+                    `;
+                } else {
+                    searchResultsDisplayEl.innerHTML += `
+                        <div class="bg-blue-100 p-3 rounded-md mb-2 shadow">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-lg font-bold text-blue-900">${plant.name}</h4>
+                                <span class="text-xs font-medium px-2 py-0.5 rounded-full ${getRarityClass(plant.rarity)}">
+                                    ${plant.rarity}
+                                </span>
+                            </div>
+                            <p class="text-sm text-blue-800">${plant.description}</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        /**
+         * Отрисовывает СУЩЕСТВЕННО собранную добычу.
+         * @param {Array} lootArray - Массив собранных растений.
+         * @param {number} roll - Результат броска d20 на сбор.
+         */
+        function renderGatheredLoot(lootArray, roll) {
+            lootDisplayEl.innerHTML = '';
+
+            if (roll <= 5) {
+                lootDisplayEl.innerHTML = `<p class="italic text-red-400 font-semibold">Провал сбора! Вы ничего не смогли собрать, или повредили найденное.</p>`;
+                return;
+            }
+            
+            if (lootArray.length === 0) {
+                lootDisplayEl.innerHTML = `<p class="italic text-gray-400">Собирать было нечего.</p>`;
+                return;
+            }
+            
+            lootArray.forEach(plant => {
+                // Используем тот же стиль, что и в `renderSearchResults`, но с зеленым оттенком
+                lootDisplayEl.innerHTML += `
+                    <div class="bg-green-100 p-3 rounded-md mb-2 shadow">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-lg font-bold text-green-900">${plant.name}</h4>
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full ${getRarityClass(plant.rarity)}">
+                                ${plant.rarity}
+                            </span>
+                        </div>
+                        <p class="text-sm text-green-800">${plant.description}</p>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
