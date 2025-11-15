@@ -195,8 +195,9 @@
             { id: 16, name: "Цветы Дракуса", category: "poison", locations: ["pustyni", "luga", "gory"], time: "any", rarity: "common", description: "Модификатор: Изменяет урон от яда на огненный или кислотный урон; цель всё еще отравлена на 1 мин. при провале спасброска Телосложения. Комбинируемый." },
             // Рвоск (ID 4) уже добавлен.
             { id: 17, name: "Морозные бобы", category: "poison", locations: ["arktika", "gory"], time: "any", rarity: "rare", description: "Модификатор: Когда цель отравлена, её скорость падает на 10 футов на 1 минуту. Неизменяемый." },
-            { id: 18, name: "Листья Харрады", category: "poison", locations: ["lesa"], time: "any", rarity: "common", description: "Эффект/Модификатор: Пока отравлена, цель имеет помехи на проверки. Неизменяемый." },
-            // Веточка лаванды (ID 8) уже добавлена.
+            
+            // *** ИЗМЕНЕНИЕ 1 ***
+            { id: 18, name: "Листья Харрады", category: "poison", locations: ["lesa", "luga", "holmy"], time: "any", rarity: "common", description: "Эффект/Модификатор: Пока отравлена, цель имеет помехи на проверки. Неизменяемый." },
 
             // ----- ИНГРЕДИЕНТЫ ЯДОВ (Из image_c1f649.jpg) -----
             { id: 19, name: "Ртутный мох", category: "poison", locations: ["povsemestno"], time: "any", rarity: "uncommon", description: "Модификатор: Удваивает кол-во костей на любой Эффект яда, но уменьшает время действия Эффекта вдвое. Комбинируемый." },
@@ -210,9 +211,15 @@
             // ----- ИНГРЕДИЕНТЫ МАГИЧЕСКИХ ЗЕЛИЙ (Из image_c1f64d.jpg) -----
             { id: 26, name: "Корень Стрела", category: "magic_potion", locations: ["pustyni", "luga", "lesa"], time: "any", rarity: "uncommon", description: "Магия: +1 к броскам атаки, когда используется на оружие." },
             { id: 27, name: "Синий Кривожаб", category: "magic_potion", locations: ["poberezhje", "lesa", "bolota"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье газообразной формы." },
-            { id: 28, name: "Ко-Глонд", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье ясновидения." },
+            
+            // *** ИЗМЕНЕНИЕ 2 ***
+            { id: 28, name: "Ко-Глонд", category: "magic_potion", locations: ["pustyni", "poberezhje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье ясновидения." },
+            
             { id: 29, name: "Дьявольский кроволист", category: "magic_potion", locations: ["holmy", "bolota", "podzemje"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье живучести." },
-            { id: 30, name: "Элементальная вода", category: "magic_potion", locations: ["special"], time: "any", rarity: "rare", description: "Модификатор (Магия): Ингредиент, требуемый для всех Магических зелий." },
+            
+            // *** ИЗМЕНЕНИЕ 3 ***
+            { id: 30, name: "Элементальная вода", category: "magic_potion", locations: ["povsemestno", "gory", "bolota", "podzemje"], time: "any", rarity: "rare", description: "Модификатор (Магия): Ингредиент, требуемый для всех Магических зелий." },
+
             { id: 31, name: "Дьявольский плющ", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье чтения мыслей." },
             { id: 32, name: "Водоподох", category: "magic_potion", locations: ["poberezhje", "bolota"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Зелье подводного дыхания." },
             { id: 33, name: "Сердце Желеодрева", category: "magic_potion", locations: ["arktika", "lesa", "holmy"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Зелье увеличения." },
