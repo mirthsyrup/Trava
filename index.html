@@ -49,15 +49,23 @@
                     <div>
                         <label for="location-filter" class="block text-sm font-medium text-gray-300 mb-2">Текущая Местность:</label>
                         <select id="location-filter" class="block w-full bg-gray-700 border-gray-600 rounded-md p-2 text-white focus:ring-green-500 focus:border-green-500">
-                            <option value="forest">Лес</option>
-                            <option value="steppe">Степь</option>
-                            <option value="mountains">Горы</option>
-                            <option value="swamp">Болото</option>
-                            <option value="river">Река</option>
+                            <!-- ИЗМЕНЕНЫ ОПЦИИ -->
+                            <option value="povsemestno">Повсеместно</option>
+                            <option value="pustyni">Пустыни</option>
+                            <option value="luga">Луга</option>
+                            <option value="lesa">Леса</option>
+                            <option value="poberezhje">Побережье/Берега</option>
+                            <option value="bolota">Болота</option>
+                            <option value="holmy">Холмы</option>
+                            <option value="arktika">Арктика</option>
+                            <option value="podzemje">Подземье</option>
+                            <option value="gory">Горы</option>
+                            <option value="special">Специальные (Сбор)</option>
                         </select>
                     </div>
 
-                    <!-- Переключатель Ночь/День -->
+                    <!-- Переключатель Ночь/День (ОСТАВЛЕН ПО ПРОСЬБЕ) -->
+                    <!-- *** ИСПРАВЛЕНИЕ 1: Восстановлен поврежденный HTML-код переключателя *** -->
                     <div class="mt-4">
                         <label for="night-toggle" class="flex items-center cursor-pointer">
                             <div class="relative">
@@ -140,12 +148,11 @@
                     <div>
                         <label for="category-filter" class="block text-sm font-medium text-gray-300 mb-2">Фильтр по Категории:</label>
                         <select id="category-filter" class="block w-full md:w-1/2 bg-gray-700 border-gray-600 rounded-md p-2 text-white focus:ring-green-500 focus:border-green-500">
+                            <!-- ИЗМЕНЕНЫ ОПЦИИ -->
                             <option value="all">Все Категории</option>
-                            <option value="herb">Травы</option>
-                            <option value="flower">Цветы</option>
-                            <option value="fungus">Грибы</option>
-                            <option value="berry">Ягоды</option>
-                            <option value="root">Корни</option>
+                            <option value="potion">Ингредиенты Зелий</option>
+                            <option value="poison">Ингредиенты Ядов</option>
+                            <option value="magic_potion">Ингредиенты Магических Зелий</option>
                         </select>
                     </div>
 
@@ -162,40 +169,66 @@
     <script>
         // --- БАЗА ДАННЫХ РАСТЕНИЙ ---
         // Rarity: 'common', 'uncommon', 'rare', 'very_rare'
-        // Time: 'day', 'night', 'any'
-        // Locations: 'forest', 'steppe', 'mountains', 'swamp', 'river'
+        // Time: 'any' (по просьбе пользователя механика оставлена)
+        // Locations: 'povsemestno', 'pustyni', 'luga', 'lesa', 'poberezhje', 'bolota', 'holmy', 'arktika', 'podzemje', 'gory', 'special'
+        // Category: 'potion' (Зелья), 'poison' (Яды), 'magic_potion' (Магические зелья)
         const plantDatabase = [
-            // --- Лес (Forest) ---
-            { id: 1, name: "Обыкновенный Подорожник", category: "herb", locations: ["forest", "steppe"], time: "day", rarity: "common", description: "Помогает при мелких ранах и укусах." },
-            { id: 2, name: "Лунная Лилия", category: "flower", locations: ["forest", "river"], time: "night", rarity: "uncommon", description: "Светится слабым серебристым светом. Используется в зельях сна." },
-            { id: 3, name: "Мухомор", category: "fungus", locations: ["forest"], time: "any", rarity: "common", description: "Ядовит в сыром виде, но основа для многих мазей." },
-            { id: 4, name: "Волчья Ягода", category: "berry", locations: ["forest"], time: "day", rarity: "uncommon", description: "Сильный яд. Используется в малых дозах." },
-            { id: 5, name: "Корень Жизни", category: "root", locations: ["forest"], time: "any", rarity: "rare", description: "Говорят, его отвар может исцелить тяжелые недуги." },
-            { id: 6, name: "Звездный Мох", category: "fungus", locations: ["forest", "swamp"], time: "night", rarity: "very_rare", description: "Мерцает, как ночное небо. Ключ к зельям невидимости." },
+            // ----- ИНГРЕДИЕНТЫ ЗЕЛИЙ (Из image_c1f62a.jpg) -----
+            { id: 1, name: "Кровьтрава", category: "potion", locations: ["povsemestno"], time: "any", rarity: "common", description: "Эффект: Может быть смешано с любым другим ингредиентом, содержащим Эффект Зелья, чтобы стать источником еды на 1 день. Неизменяемый." },
+            { id: 2, name: "Хромовая слизь", category: "potion", locations: ["poberezhje", "podzemje"], time: "any", rarity: "rare", description: "Специальный (модификатор): Итоговый Эффект после всех вычислений становится абсолютно противоположным. Это зависит от Мастера, относительно каждого зелья/яда." },
+            { id: 3, name: "Сушёная Эфедра", category: "potion", locations: ["pustyni", "gory"], time: "any", rarity: "uncommon", description: "Модификатор: Увеличивает тип кости на 1 для одного исцеляющего эффекта." },
+            { id: 4, name: "Рвоск", category: "potion", locations: ["lesa", "bolota"], time: "any", rarity: "common", description: "Специальный (модификатор): Задерживает Эффект действия ингредиентов на 1d6 раундов." },
+            { id: 5, name: "Фенхелёвый шёлк", category: "potion", locations: ["arktika", "podzemje"], time: "any", rarity: "common", description: "Эффект: Стабилизирует температуру тела, чтобы выдержать холод или влажность на 1 час. Неизменяемый." },
+            { id: 6, name: "Кисть Генгкоу", category: "potion", locations: ["holmy", "podzemje"], time: "any", rarity: "uncommon", description: "Модификатор: Удваивает кол-во костей при броске любого исцеляющего эффекта. Эффект исцеления делится пополам на два раунда и срабатывает в конце вашего хода." },
+            { id: 7, name: "Нектар Гиацинта", category: "potion", locations: ["poberezhje", "luga"], time: "any", rarity: "common", description: "Эффект: Уменьшает на 1d6 раундов эффект яда на цели, однако не может убрать его полностью, один раунд все равно будет нанесен урон от яда." },
+            { id: 8, name: "Веточка лаванды", category: "potion", locations: ["poberezhje", "luga", "holmy"], time: "any", rarity: "common", description: "Специальный (модификатор): Делает зелье или яд более стабильный для его безопасного создания. Накапливаемый до 3." },
+            { id: 9, name: "Корень Мандрагоры", category: "potion", locations: ["povsemestno"], time: "any", rarity: "common", description: "Эффект: Ослабляет любую болезнь или яд наполовину в течении 2к12 часов. Препятствует только уже существующим ядам или заболеваниям. Неизменяемый." },
+            { id: 10, name: "Семена Молочая", category: "potion", locations: ["povsemestno"], time: "any", rarity: "common", description: "Модификатор: Удваивает кол-во костей при броске любого исцеляющего эффекта, но убирает модификатор Алхимии." },
+            { id: 11, name: "Корень дикого Шалфея", category: "potion", locations: ["povsemestno"], time: "any", rarity: "common", description: "Эффект: Исцеляет 2к4 + Модификатор Алхимии. Накапливаемый до 5." },
 
-            // --- Степь (Steppe) ---
-            { id: 7, name: "Степная Полынь", category: "herb", locations: ["steppe"], time: "day", rarity: "common", description: "Горькая трава, отгоняющая насекомых и злых духов." },
-            { id: 8, name: "Ковыль-Шелк", category: "herb", locations: ["steppe"], time: "any", rarity: "uncommon", description: "Его волокна прочны, как сталь, при правильной обработке." },
-            { id: 9, name: "Солнечный Колючник", category: "flower", locations: ["steppe", "mountains"], time: "day", rarity: "common", description: "Ярко-желтый цветок, накапливающий солнечный свет." },
-            { id: 10, name: "Степная Гадючка", category: "root", locations: ["steppe"], time: "night", rarity: "rare", description: "Извивающийся корень, эффективный против ядов." },
+            // ----- ИНГРЕДИЕНТЫ ЯДОВ (Из image_c1f644.jpg) -----
+            { id: 12, name: "Арктический плющ", category: "poison", locations: ["arktika", "gory"], time: "any", rarity: "common", description: "Модификатор: Заменяет урон ядом на холод или урон некротической энергией; цель становится отравлена на 1 минуту при провале спасброска Телосложения. Комбинируемый." },
+            { id: 13, name: "Шляпка мухомора", category: "poison", locations: ["poberezhje", "bolota"], time: "any", rarity: "common", description: "Модификатор: Меняет любой эффект яда на не летальный, цель падает без сознания." },
+            { id: 14, name: "Дыхание Василиска", category: "poison", locations: ["gory"], time: "any", rarity: "very_rare", description: "Эффект: Медленно парализует врага. Цель должна совершать спасбросок Телосложения каждый ход в течении 4-х ходов. Пока цель находится под действием этого эффекта, то она считается замедленной, как при наложении заклинания Замедление. При провале спасброска цель парализуется на 4 часа. Не комбинируемый. Неизменяемый." },
+            { id: 15, name: "Сок кактуса", category: "poison", locations: ["pustyni", "luga"], time: "any", rarity: "common", description: "Модификатор: Цель не получает никакого урона от яда и не замечает его действия, пока не пройдет 5 ходов с момента начала действия яда. После этого цель получает урон за все прошедшие ходы единовременно. Агрегатный." },
+            // Хромовая слизь (ID 2) уже добавлена.
+            { id: 16, name: "Цветы Дракуса", category: "poison", locations: ["pustyni", "luga", "gory"], time: "any", rarity: "common", description: "Модификатор: Изменяет урон от яда на огненный или кислотный урон; цель всё еще отравлена на 1 мин. при провале спасброска Телосложения. Комбинируемый." },
+            // Рвоск (ID 4) уже добавлен.
+            { id: 17, name: "Морозные бобы", category: "poison", locations: ["arktika", "gory"], time: "any", rarity: "rare", description: "Модификатор: Когда цель отравлена, её скорость падает на 10 футов на 1 минуту. Неизменяемый." },
+            { id: 18, name: "Листья Харрады", category: "poison", locations: ["lesa"], time: "any", rarity: "common", description: "Эффект/Модификатор: Пока отравлена, цель имеет помехи на проверки. Неизменяемый." },
+            // Веточка лаванды (ID 8) уже добавлена.
 
-            // --- Горы (Mountains) ---
-            { id: 11, name: "Горный Вереск", category: "herb", locations: ["mountains"], time: "day", rarity: "common", description: "Чай из него придает бодрости и согревает." },
-            { id: 12, name: "Эдельвейс", category: "flower", locations: ["mountains"], time: "day", rarity: "uncommon", description: "Символ удачи и стойкости. Растет на голых скалах." },
-            { id: 13, name: "Каменная Роза", category: "flower", locations: ["mountains"], time: "any", rarity: "rare", description: "Лепестки тверды, как камень. Используется в защитных зельях." },
-            { id: 14, name: "Драконье Дыхание", category: "herb", locations: ["mountains"], time: "any", rarity: "very_rare", description: "Горячая на ощупь трава. Основа для огненных эликсиров." },
-
-            // --- Болото (Swamp) ---
-            { id: 15, name: "Болотный Мох", category: "herb", locations: ["swamp"], time: "any", rarity: "common", description: "Отличный перевязочный и фильтрующий материал." },
-            { id: 16, name: "Топная Ряска", category: "herb", locations: ["swamp", "river"], time: "day", rarity: "common", description: "Скользкая, но питательная." },
-            { id: 17, name: "Гнилец", category: "fungus", locations: ["swamp"], time: "night", rarity: "uncommon", description: "Светится тусклым зеленым светом. Используется в ядах и проклятиях." },
-            { id: 18, name: "Жабий Корень", category: "root", locations: ["swamp"], time: "any", rarity: "rare", description: "Усиливает магические свойства других ингредиентов." },
-
-            // --- Река (River) ---
-            { id: 19, name: "Речная Мята", category: "herb", locations: ["river"], time: "day", rarity: "common", description: "Освежает дыхание и проясняет ум." },
-            { id: 20, name: "Кувшинка", category: "flower", locations: ["river"], time: "day", rarity: "common", description: "Успокаивающее средство." },
-            { id: 21, name: "Жемчужная Водоросль", category: "herb", locations: ["river"], time: "night", rarity: "uncommon", description: "Маленькие пузырьки на ней светятся, как жемчуг." },
-            { id: 22, name: "Глубинный Корень", category: "root", locations: ["river", "swamp"], time: "any", rarity: "rare", description: "Тянется глубоко в ил. Позволяет дышать под водой." }
+            // ----- ИНГРЕДИЕНТЫ ЯДОВ (Из image_c1f649.jpg) -----
+            { id: 19, name: "Ртутный мох", category: "poison", locations: ["povsemestno"], time: "any", rarity: "uncommon", description: "Модификатор: Удваивает кол-во костей на любой Эффект яда, но уменьшает время действия Эффекта вдвое. Комбинируемый." },
+            { id: 20, name: "Сияющий синтоцвет", category: "poison", locations: ["podzemje"], time: "any", rarity: "rare", description: "Модификатор: Изменяет урон ядом на урон от света; цель всё еще отравлена на 1 минуту при провале спасброска Телосложения. Комбинируемый." },
+            { id: 21, name: "Ягоды шиповцета", category: "poison", locations: ["pustyni", "bolota"], time: "any", rarity: "uncommon", description: "Специальный (модификатор): Увеличивает тип кости на 1 за любой Модификатор. Для чар увеличивает ранг заклинания." },
+            { id: 22, name: "Лепестки языка вирма", category: "poison", locations: ["povsemestno"], time: "any", rarity: "common", description: "Эффект: 1к4 + Мод. Алхимии урона ядом за атаку. Цель считается отравленной на 1 минуту. Накапливаемый до 5." },
+            { id: 23, name: "Яд василиска", category: "poison", locations: ["special"], time: "any", rarity: "very_rare", description: "Эффект (спасбросок): 5к6 + Мод. Алхимии урона ядом за атаку или за раунд, если сделан как агрегатный. Цель становится отравлена на 1 минуту при провале спасброска Телосложения. Агрегатный." },
+            { id: 24, name: "Яд гигантских ос", category: "poison", locations: ["special"], time: "any", rarity: "rare", description: "Эффект (спасбросок): 3к6 + Мод. Алхимии урона ядом за атаку или за раунд, если сделан как агрегатный. Цель становится отравлена на 1 минуту при провале спасброска Телосложения. Агрегатный." },
+            { id: 25, name: "Яд гигантских скорпионов", category: "poison", locations: ["special"], time: "any", rarity: "rare", description: "Эффект (спасбросок): 4к10 + Мод. Алхимии урона ядом за атаку или за раунд, если сделан как агрегатный. Накапливаемый до 4. Агрегатный." },
+            
+            // ----- ИНГРЕДИЕНТЫ МАГИЧЕСКИХ ЗЕЛИЙ (Из image_c1f64d.jpg) -----
+            { id: 26, name: "Корень Стрела", category: "magic_potion", locations: ["pustyni", "luga", "lesa"], time: "any", rarity: "uncommon", description: "Магия: +1 к броскам атаки, когда используется на оружие." },
+            { id: 27, name: "Синий Кривожаб", category: "magic_potion", locations: ["poberezhje", "lesa", "bolota"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье газообразной формы." },
+            { id: 28, name: "Ко-Глонд", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье ясновидения." },
+            { id: 29, name: "Дьявольский кроволист", category: "magic_potion", locations: ["holmy", "bolota", "podzemje"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье живучести." },
+            { id: 30, name: "Элементальная вода", category: "magic_potion", locations: ["special"], time: "any", rarity: "rare", description: "Модификатор (Магия): Ингредиент, требуемый для всех Магических зелий." },
+            { id: 31, name: "Дьявольский плющ", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье чтения мыслей." },
+            { id: 32, name: "Водоподох", category: "magic_potion", locations: ["poberezhje", "bolota"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Зелье подводного дыхания." },
+            { id: 33, name: "Сердце Желеодрева", category: "magic_potion", locations: ["arktika", "lesa", "holmy"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Зелье увеличения." },
+            { id: 34, name: "Светопыль шляпки", category: "magic_potion", locations: ["gory", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье героизма." },
+            { id: 35, name: "Порошок мэрипоти", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье долголетия." },
+            { id: 36, name: "Ягоды Паслёна", category: "magic_potion", locations: ["lesa", "holmy"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Масло ускользания." },
+            { id: 37, name: "Изначальный бальзам", category: "magic_potion", locations: ["gory", "bolota", "podzemje"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье силы великана." },
+            { id: 38, name: "Каменный вьюн", category: "magic_potion", locations: ["holmy", "gory"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье неуязвимости." },
+            { id: 39, name: "Бобы Суили", category: "magic_potion", locations: ["pustyni", "luga"], time: "any", rarity: "common", description: "Магия: Игрок создаёт Зелье лазанья." },
+            { id: 40, name: "Серебряный гибискус", category: "magic_potion", locations: ["arktika", "podzemje"], time: "any", rarity: "rare", description: "Магия: При употреблении позволяет использовать случайное элементальное дыхание 3 раза. Неизменяемый." },
+            { id: 41, name: "Листохвост", category: "magic_potion", locations: ["luga", "holmy"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье скорости." },
+            { id: 42, name: "Вердинская крапива", category: "magic_potion", locations: ["lesa"], time: "any", rarity: "uncommon", description: "Магия: Игрок создаёт Зелье дружбы с животными." },
+            { id: 43, name: "Корень пустоты", category: "magic_potion", locations: ["arktika", "pustyni"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье полёта." },
+            { id: 44, name: "Стебли Гифломы", category: "magic_potion", locations: ["lesa", "podzemje"], time: "any", rarity: "very_rare", description: "Магия: Игрок создаёт Зелье невидимости." },
+            { id: 45, name: "Зловонная луковица", category: "magic_potion", locations: ["poberezhje", "bolota"], time: "any", rarity: "rare", description: "Магия: Игрок создаёт Зелье уменьшения." },
+            // Ягоды шиповцета (ID 21) уже добавлены.
         ];
 
         // --- Глобальные Элементы DOM ---
@@ -346,36 +379,34 @@
 
         /**
          * НОВАЯ ФУНКЦИЯ: Возвращает SVG-иконку для категории.
-         * @param {string} category - "herb", "flower", "fungus", "berry", "root"
+         * @param {string} category - "potion", "poison", "magic_potion"
          * @returns {string} - HTML-строка с SVG
          */
         function getCategoryIcon(category) {
             // Иконки взяты из Heroicons (https://heroicons.com/)
             const icons = {
-                'herb': `
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0-1.319.769-2.511 1.91-3.049a4.5 4.5 0 0 1 6.364 0c1.14.538 1.91 1.73 1.91 3.05v.417a2.25 2.25 0 0 1-2.25 2.25h-5.5a2.25 2.25 0 0 1-2.25-2.25v-.417Z" />
+                // Иконка для Зелий (бутылка)
+                'potion': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075.075a1.575 1.575 0 0 0 2.25 2.25l.075.075v-4.875M10.05 4.575h.008v.008h-.008v-.008Zm-3.15 0h.008v.008h-.008v-.008Zm0 9a1.5 1.5 0 0 0-1.5 1.5v5.25a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5v-5.25a1.5 1.5 0 0 0-1.5-1.5h-3Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm3-3h.008v.008h-.008v-.008Z" />
                     </svg>`,
-                'flower': `
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Z" />
+                // Иконка для Ядов (череп)
+                'poison': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-400">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.412 15.655 9.75 12.75l-1.662 2.905m-1.662-2.905L4.764 12.75l-1.662 2.905m7.5 0-3.324 5.817a.375.375 0 0 1-.65 0L2.697 16.126c-.866-1.5.217-3.374 1.948-3.374h14.71c1.73 0 2.813 1.874 1.948 3.374L13.088 21.943a.375.375 0 0 1-.65 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12.963 2.286a.375.375 0 0 0-.927 0L8.38 3.961a.375.375 0 0 0-.17.316v3.621a.375.375 0 0 0 .17.316l3.655 1.675a.375.375 0 0 0 .416 0l3.655-1.675a.375.375 0 0 0 .17-.316V4.277a.375.375 0 0 0-.17-.316L12.963 2.286Z" />
                     </svg>`,
-                'fungus': `
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.375 10.375V11.25c0 1.5-1.5 2.625-3.375 2.625h-1.5c-1.875 0-3.375 1.125-3.375 2.625V17.25c0 1.104-.896 2.025-2.025 2.025h-1.5c-1.104 0-2.025-.921-2.025-2.025v-.75c0-1.5-1.5-2.625-3.375-2.625H4.125C2.25 13.875.75 12.75.75 11.25V10.375c0-1.104.921-2.025 2.025-2.025h1.5c1.104 0 2.025.921 2.025 2.025v.75c0 1.5 1.5 2.625 3.375 2.625h1.5c1.875 0 3.375-1.125 3.375-2.625v-.75c0-1.104.921-2.025 2.025-2.025h1.5c1.104 0 2.025.921 2.025 2.025Z" />
+                // Иконка для Магических Зелий (искра)
+                'magic_potion': `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-purple-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.452-2.452L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.452-2.452L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.452 2.452L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.452 2.452ZM16.5 13.5h-3" />
                     </svg>`,
-                'berry': `
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.092 1.21-.138 2.43-.138 3.662a4.006 4.006 0 0 0 4.006 4.006h7.032a4.006 4.006 0 0 0 4.006-4.006Zm-7.032 0a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v.001M12 19.5v.001M16.5 10.5v.001M7.5 10.5v.001" />
-                    </svg>`,
-                'root': `
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a11.105 11.105 0 0 1-3.182.004l-.143-.048a2.25 2.25 0 0 1-1.161-.886l-.51-.766c-.319-.48-.226-1.121.216-1.49l1.068-.89a1.125 1.125 0 0 0 .405-.864v-.568a1.125 1.125 0 0 1 2.25 0ZM19.5 12.75l-2.66.99c-.42.157-.74.47-.958.855l-.417.75a.375.375 0 0 1-.68 0l-.417-.75c-.218-.385-.537-.698-.958-.855l-2.66-.99a1.125 1.125 0 0 0-1.173.49l-.499.866a.375.375 0 0 1-.645 0l-.499-.866a1.125 1.125 0 0 0-1.173-.49L4.5 12.75M3 15.75l2.25.844c.427.16.8.384 1.116.67l.69.574a.375.375 0 0 0 .56 0l.69-.574c.317-.286.69-.51 1.116-.67L12 15.75l2.25.844c.427.16.8.384 1.116.67l.69.574a.375.375 0 0 0 .56 0l.69-.574c.317-.286.69-.51 1.116-.67L21 15.75M12 21.75l.394-.132a.375.375 0 0 0 0-.724L12 20.75l-.394.132a.375.375 0 0 0 0 .724L12 21.75Z" />
-                    </svg>`,
-                default: ''
+                default: `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>`
             };
-            return icons[category] || '';
+            return icons[category] || icons.default;
         }
 
         /**
@@ -417,7 +448,10 @@
             
             // Рендерим группы
             const categoryNames = {
-                'herb': 'Травы', 'flower': 'Цветы', 'fungus': 'Грибы', 'berry': 'Ягоды', 'root': 'Корни'
+                // ОБНОВЛЕНЫ НАЗВАНИЯ КАТЕГОРИЙ
+                'potion': 'Ингредиенты Зелий', 
+                'poison': 'Ингредиенты Ядов', 
+                'magic_potion': 'Ингредиенты Магических Зелий'
             };
 
             // Сортируем категории
@@ -448,7 +482,7 @@
                             <button class="plant-toggle-btn w-full flex items-center justify-between p-4 text-left hover:bg-gray-600 focus:outline-none focus:bg-gray-600 transition duration-150">
                                 <div class="flex items-center">
                                     <!-- Иконка категории -->
-                                    <span class="mr-3 text-green-400 flex-shrink-0">
+                                    <span class="mr-3 flex-shrink-0">
                                         ${getCategoryIcon(plant.category)}
                                     </span>
                                     <!-- Название -->
@@ -469,10 +503,11 @@
                                         Время: ${plant.time === 'any' ? 'Любое' : (plant.time === 'day' ? 'День' : 'Ночь')}
                                     </span>
                                     <span class="text-xs font-medium px-2 py-1 rounded-md bg-gray-600 text-gray-200">
-                                        Места: ${plant.locations.map(loc => 
-                                            // Простое преобразование ключа в читаемое название
-                                            document.querySelector(`#location-filter option[value='${loc}']`).textContent
-                                        ).join(', ')}
+                                        Места: ${plant.locations.map(loc => {
+                                            // ОБНОВЛЕНА ЛОГИКА ПОЛУЧЕНИЯ ИМЕНИ ЛОКАЦИИ
+                                            const option = document.querySelector(`#location-filter option[value='${loc}']`);
+                                            return option ? option.textContent : loc;
+                                        }).join(', ')}
                                     </span>
                                 </div>
                             </div>
@@ -502,10 +537,16 @@
             const currentTime = isNight ? 'night' : 'day';
 
             // 1. Получаем ВСЕ доступные растения по фильтрам
-            const availablePlants = plantDatabase.filter(plant => 
-                plant.locations.includes(currentLocation) &&
-                (plant.time === currentTime || plant.time === 'any')
-            );
+            const availablePlants = plantDatabase.filter(plant => {
+                // ОБНОВЛЕНА ЛОГИКА ФИЛЬТРАЦИИ
+                // 1. Проверка локации (включая "povsemestno")
+                const locationMatch = plant.locations.includes(currentLocation) || plant.locations.includes('povsemestno');
+                // 2. Проверка времени (все 'any', но механика оставлена)
+                const timeMatch = (plant.time === currentTime || plant.time === 'any');
+                // 3. НЕ ФИЛЬТРУЕМ по типу (potion/poison) при поиске, чтобы находить всё
+                // 4. Исключаем 'special' из поиска
+                return locationMatch && timeMatch && !plant.locations.includes('special'); 
+            });
 
             // 2. Разделяем их по редкости
             const lootPool = {
@@ -682,6 +723,7 @@
                     <div class="bg-green-100 p-3 rounded-md mb-2 shadow">
                         <div class="flex justify-between items-center">
                             <h4 class="text-lg font-bold text-green-900">${plant.name}</h4>
+                            <!-- *** ИСПРАВЛЕНИЕ 2: Исправлена опечатка (было plant.rarDefine) *** -->
                             <span class="text-xs font-medium px-2 py-0.5 rounded-full ${getRarityClass(plant.rarity)}">
                                 ${plant.rarity}
                             </span>
